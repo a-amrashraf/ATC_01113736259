@@ -33,11 +33,12 @@ const eventSchema = new mongoose.Schema({
     EventCategory: [{ type: String, required: true }],
     EventPrices: [{ticketType: {type: String}, price: {type: Number} , required: true}],
     attendees: [{
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         tickets:[{
             ticketType: {type: String},
             quantity: {type: Number}
         }],
+        default:[]
     }]
 }, { timestamps: true });
 
