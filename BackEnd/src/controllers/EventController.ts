@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Event from "../models/Event";
 
-const createEvent = async (req: Request, res: Response) => {
+export const createEvent = async (req: Request, res: Response) => {
   const {
     EventName,
     EventDescription,
@@ -9,7 +9,7 @@ const createEvent = async (req: Request, res: Response) => {
     EventTime,
     EventLocation,
     EventImage,
-    EventPrice,
+    EventPrices,
     EventCategory,
   } = req.body;
 
@@ -21,9 +21,11 @@ const createEvent = async (req: Request, res: Response) => {
       EventTime,
       EventLocation,
       EventImage,
-      EventPrice,
+      EventPrices,
       EventCategory,
     });
+
+    await newEvent.save();
 
     res.status(201).json({ message: "Event created successfully", newEvent });
   } catch (error) {
@@ -32,9 +34,9 @@ const createEvent = async (req: Request, res: Response) => {
   }
 };
 
-const GetAllEvents = async (req: Request, res: Response) => {
+export const GetAllEvents = async (req: Request, res: Response) => {
   try {
-    const Events = await Event.find();
+    const Events = await Event.find().lean();
 
     res.status(200).json({ Events });
   } catch (error) {
@@ -43,14 +45,15 @@ const GetAllEvents = async (req: Request, res: Response) => {
   }
 };
 
-const GetEvent = async (req: Request, res: Response) => {
+export const GetEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const EventId = req.params.id;
 
-    const CertainEvent = await Event.findById(EventId);
+    const CertainEvent = await Event.findById(EventId).lean();
 
     if (!CertainEvent) {
-      return res.status(404).json({ message: "Event not found" });
+      res.status(404).json({ message: "Event not found" });
+      return;
     }
 
     res.status(200).json({ CertainEvent });
@@ -60,14 +63,15 @@ const GetEvent = async (req: Request, res: Response) => {
   }
 };
 
-const EditEvent = async (req: Request, res: Response) => {
+export const EditEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const EventId = req.params.id;
 
     const CertainEvent: Event | null = await Event.findById(EventId);
 
     if (!CertainEvent) {
-      return res.status(404).json({ message: "Event not found" });
+      res.status(404).json({ message: "Event not found" });
+      return;
     }
 
     const UpdatedEvent = await Event.findByIdAndUpdate(EventId, req.body, {
@@ -83,14 +87,18 @@ const EditEvent = async (req: Request, res: Response) => {
   }
 };
 
-const DeleteEvent = async (req: Request, res: Response) => {
+export const DeleteEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const EventId = req.params.id;
 
     const CertainEvent: Event | null = await Event.findById(EventId);
 
     if (!CertainEvent) {
-      return res.status(404).json({ message: "Event not found" });
+      res.status(404).json({ message: "Event not found" });
+      return;
     }
 
     const DeletedEvent = await Event.findByIdAndDelete(EventId);
@@ -104,22 +112,29 @@ const DeleteEvent = async (req: Request, res: Response) => {
   }
 };
 
-const FilterEvents = async (req: Request, res: Response) => {
+export const FilterEvents = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { EventCategory } = req.query;
 
     if (!EventCategory) {
-      return res
-        .status(400)
-        .json({ message: "EventCategory is required or invalid" });
+      res.status(400).json({ message: "EventCategory is required or invalid" });
+      return;
     }
 
-    const filteredEvents = await Event.find({ EventCategory });
+    const categories = Array.isArray(EventCategory)
+      ? EventCategory
+      : (EventCategory as string).split(",");
+
+    const filteredEvents = await Event.find({
+      EventCategory: { $in: categories },
+    }).lean();
 
     if (filteredEvents.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No events found for this category" });
+      res.status(404).json({ message: "No events found for this category" });
+      return;
     }
 
     res
@@ -129,4 +144,13 @@ const FilterEvents = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ message: "Error filtering events" });
   }
+};
+
+export default {
+  createEvent,
+  GetAllEvents,
+  GetEvent,
+  EditEvent,
+  DeleteEvent,
+  FilterEvents,
 };

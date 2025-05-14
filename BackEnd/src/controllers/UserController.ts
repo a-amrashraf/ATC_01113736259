@@ -5,12 +5,13 @@ import Jwt from "jsonwebtoken";
 
 // This function handles user registration
 // It checks if the user already exists, hashes the password, and creates a new user
-export const registeruser = async (req: Request, res: Response) => {
+export const registeruser = async (req: Request, res: Response): Promise<void> => {
   const { username, email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+     res.status(400).json({ message: "User already exists" });
+      return
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,16 +27,18 @@ export const registeruser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginuser = async (req: Request, res: Response) => {
+export const loginuser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User Not Found" });
+       res.status(400).json({ message: "User Not Found" });
+       return
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      res.status(400).json({ message: "Invalid credentials" });
+      return
     }
 
     const token = Jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
