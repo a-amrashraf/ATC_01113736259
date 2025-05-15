@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import connectDB from './config/DB'
 import EventRoutes from './routes/Events'
 import UserRoutes from './routes/User'
+import BookingRoutes from './routes/Booking'
 
 
 dotenv.config()
@@ -16,8 +17,9 @@ app.use(morgan("short"));
 
 connectDB();
 
-app.use("/api/Events", EventRoutes)
-app.use("/api/User", UserRoutes)
+app.use("/api/events", EventRoutes)
+app.use("/api/user", UserRoutes)
+app.use("/api/booking", BookingRoutes)
 
 
 const PORT = process.env.PORT || 5000;
