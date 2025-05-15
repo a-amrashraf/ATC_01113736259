@@ -17,9 +17,9 @@ app.use(morgan("short"));
 
 connectDB();
 
-app.use("/api/events", EventRoutes)
-app.use("/api/user", UserRoutes)
-app.use("/api/booking", BookingRoutes)
+app.use("/events", EventRoutes)
+app.use("/user", UserRoutes)
+app.use("/booking", BookingRoutes)
 
 
 const PORT = process.env.PORT || 5000;

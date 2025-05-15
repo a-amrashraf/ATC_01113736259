@@ -36,9 +36,19 @@ export const createEvent = async (req: Request, res: Response) => {
 
 export const GetAllEvents = async (req: Request, res: Response) => {
   try {
-    const Events = await Event.find().lean();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
-    res.status(200).json({ Events });
+    const total = await Event.countDocuments();
+    const Events = await Event.find().skip(skip).limit(limit).lean();
+
+    res.status(200).json({
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      Events,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "No Events Found" });
@@ -117,7 +127,7 @@ export const FilterEvents = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { EventCategory } = req.query;
+    const { EventCategory, page = 1, limit = 10 } = req.query;
 
     if (!EventCategory) {
       res.status(400).json({ message: "EventCategory is required or invalid" });
@@ -128,18 +138,30 @@ export const FilterEvents = async (
       ? EventCategory
       : (EventCategory as string).split(",");
 
+    const skip = (Number(page) - 1) * Number(limit);
+    const total = await Event.countDocuments({
+      EventCategory: { $in: categories },
+    });
+
     const filteredEvents = await Event.find({
       EventCategory: { $in: categories },
-    }).lean();
+    })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
 
     if (filteredEvents.length === 0) {
       res.status(404).json({ message: "No events found for this category" });
       return;
     }
 
-    res
-      .status(200)
-      .json({ message: "Events filtered successfully", filteredEvents });
+    res.status(200).json({
+      message: "Events filtered successfully",
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+      totalResults: total,
+      filteredEvents,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error filtering events" });
