@@ -1,97 +1,14 @@
-<!-- <?php
-session_start();
-$userId = $_SESSION['user_id'];
-$username = $_SESSION['username'];
-// Check if the user is logged in
-if (isset($_SESSION['user_id'])) {
-  // Access user details
-  $userId = $_SESSION['user_id'];
-  $username = $_SESSION['username'];
-  // Access other relevant details
-} else {
-   // Redirect to the login page if not logged in
-   echo '<script>window.location.href = "signin-form.php";</script>';
-   exit();
-}
-$servername = "localhost:3307";
-$username = "root";
-$password = "";
-$dbname = "project";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$ticketSql = "SELECT category_name, price FROM ticket_pricing";
-$ticketResult = $conn->query($ticketSql);
-
-if (!$ticketResult) {
-    die("Error retrieving ticket categories: " . $conn->error);
-}
-
-// Store ticket categories and prices in an array
-$ticketCategories = array();
-while ($ticketRow = $ticketResult->fetch_assoc()) {
-    $ticketCategories[] = $ticketRow;
-}
-
-
-
-
-function getNames($column , $table, $conn) {
-    $sql = "SELECT $column FROM $table";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $names = [];
-        while($row = $result->fetch_assoc()) {
-            $names[] = $row[$column];
-        }
-        return $names;
-    } else {
-        return null;
-    }
-}
-
-
-$team = getNames("team_name","team", $conn);
-
-
-?>
-<?php
-// Fetch the user's profile_pic_url from the database
-$userId = $_SESSION['user_id']; // Assuming you have a user session
-$selectQuery = "SELECT profile_pic_url FROM users WHERE user_id = $userId";
-$result = mysqli_query($conn, $selectQuery);
-$row = mysqli_fetch_assoc($result);
-
-// Check if the user has a custom profile picture, otherwise use the default
-$profilePicUrl = !empty($row['profile_pic_url']) ? $row['profile_pic_url'] : 'default_profile_pic_url.jpg';
-?> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matches</title>
-    <link
-      rel="canonical"
-      href="https://getbootstrap.com/docs/5.3/examples/headers/"
-    />
-
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@docsearch/css@3"
-    />
-    <!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> -->
-    <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
+    <title>Event Details</title>
+    <!-- Fixed Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+          crossorigin="anonymous">
     <link rel="stylesheet" href="Event-Details.css" />
 </head>
 <body>
@@ -178,21 +95,12 @@ $profilePicUrl = !empty($row['profile_pic_url']) ? $row['profile_pic_url'] : 'de
         <div class="collapse navbar-collapse justify-content-center d-lg-flex" id="navbarsExample11">
           <div class="info">
                     <div class="welcome">Welcome</div>
-                    <div class="name"></div>
-                   
-                   
                 </div>
           <ul class="navbar-nav col-lg-6 justify-content-lg-center">
               <ul
               class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 "
             >
-              <li class="nav-icon">
-                <a href="Event-Details.html" class="nav-link text-black">
-                  <svg class="bi d-block mx-auto mb-1" width="30" height="30">
-                      
-                    </svg>             Event-Details
-                </a>
-              </li>
+              
               <li class="nav-icon">
                   <a href="Events.html" class="nav-link text-dark">
                     <svg class="bi d-block mx-auto mb-1" width="30" height="30">
@@ -220,318 +128,219 @@ $profilePicUrl = !empty($row['profile_pic_url']) ? $row['profile_pic_url'] : 'de
       </div>
     </nav>
       
-      <nav class="navbar navbar-expand-lg bg-body-tertiary rounded" aria-label="Thirteenth navbar example">
-        <div class="container-fluid">
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-  
-          <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
-            <a class="navbar-brand col-lg-3 me-0" >Matches</a>
-            <ul class="navbar-nav col-lg-9 justify-content-lg-center">
-    <li class="nav-item">
-        <form id="yourFormId" method="post" action="">
-            <div class="d-flex">
-                <!-- <select id="team" name="selectedTeam" class="form-control" style="width: 250px;">
-                    <option id="allTeams" <?php if(isset($_POST['selectedTeam']) && $_POST['selectedTeam'] == 'All Teams'){echo 'selected';} ?>>All Teams</option>
-                    <?php foreach ($team as $team): ?>
-                        <option id="selectedTeam" <?php if(isset($_POST['selectedTeam']) && $_POST['selectedTeam'] == $team){echo 'selected';} ?> value="<?php echo $team; ?>"><?php echo $team; ?></option>
-                    <?php endforeach; ?>
-                </select> -->
-                <button type="submit" name="submit" class="button button-black " style="width: 200px;">Filter</button>
-            </div>
-        </form>
-    </li>
+     <div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 id="eventName" class="display-4 fw-bold"></h1>
+        <div id="eventDate" class="fs-5 text-muted"></div>
+        <div id="eventLocation" class="text-uppercase mt-2"></div>
+    </div>
 
-          </div>
-        </div>
-      </nav>
-      
-     
-          <div class="all-matches snipcss-UkjXK">
-              <div class="ng-star-inserted">
-                  <div class="match active">
-                      <div class="top clearfix">
-                          <div class="teams">
-                              <div class="image-holder first">
-                                  <div class="flag-icon style-GZKDY" id="style-GZKDY">
-                                     
-                                  </div>
-                              </div>
-                              <div class="image-holder second">
-                                  <div class="flag-icon style-jQWQz" id="style-jQWQz">
-                                      
-                                  </div>
-                              </div>
-                              <div class="team-names">
-                                  <div class="team-name first">
-                                      
-                                  </div>
-                                  <div class="team-name-holder">
-                                      <div class="vs">
-                                          vs
-                                      </div>
-                                      <div class="team-name second">
-                                          
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="blocks">
-                              <div class="one-block stadium">
-                                  <div class="image-holder">
-                                      <img alt="" src="https://tazkarti.com/assets/images/svg/stadium.svg">
-                                  </div>
-                                  <div class="info">
-                                      
-                                  </div>
-                              </div>
-                              <div class="one-block when">
-                                  <div class="image-holder">
-                                      <img alt="" src="https://tazkarti.com/assets/images/calendar.svg">
-                                  </div>
-                                  <div class="info">
-                                      <div class="first">
-                                          
-                                      </div>
-                                      <div class="second">
-                                          
-                                      </div>
-                                  </div>
-                              </div>
-                             
-                             
-            </div>
-          </div>
-          <div class="bottom">
-            <div class="one">
-              <div class="first">
-                Tournament
-              </div>
-              <div class="second style-oF12b" id="style-oF12b">
-              
-              </div>
-            </div>
-            <div class="one">
-              <div class="first">
-                Match No.
-              </div>
-              <div class="second style-qTcj7" id="style-qTcj7">
-              
-              </div>
-            </div>
-            <div class="one">
-              <div class="first ng-star-inserted">
-                Group : 
-              </div>
-              <div class="second style-tabpl" id="style-tabpl">
-               
-              </div>
-            </div>
-            <div class="one">
-              <div class="second style-h4N5j" id="style-h4N5j">
-              
-              </div>
-            </div>
-           
-          </div>
-        </div>
-      </div>
-    </div> <hr>
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="staticBackdropLabel">Book Ticket</h4>
-              <div><button type="button" class="btn-close" onClick="window.location.reload();" aria-label="Close"></button></div>
-          </div>
-          <div class="modal-body text-center">
-          
-                  <input type="hidden" name="matchId" id="matchIdInput">
-                  <input type="hidden" name="ticketCategory" id="ticketCategoryInput">
-                  <input type="hidden" name="ticketPrice" id="ticketPriceInput">
-              <div class="teams-images modal-body text-center d-flex justify-content-center align-items-center">
-                  <div class="d-inline-block mx-4 image-holder">
-                  <img src="" class="rounded-circle img-fluid team-logo-1" alt="Team 1 Logo">
-                      <div class="team-name first team-name-1"></div>
-                  </div>
-                  <div class="d-inline-block mx-5 image-holder">
-                  <img src="" class="rounded-circle img-fluid team-logo-2" alt="Team 2 Logo">
-                      <div class="team-name first team-name-2"></div>
-                  </div>
-              </div>
-             
-          <div class="mt-3">
-              <div>Choose a seat</div>
-              <select id="cat-select" class="cat-select">
-                
-                  </select>
-                  
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button"  class="btn btn-secondary" onClick="window.location.reload();" >Close</button>
-            <button type="submit" class="button button-black width-auto book-ticket-btn" 
-  data-bs-toggle="modal" 
-  data-bs-target="#staticBackdrop"
-  id="bookButton"
-  
-  ">
-  Book Ticket
-</button>
-</form>
-          </div>
-      </div>
-  </div>
+    <div class="mt-4 text-center" id="eventTagsContainer">
+    <h5>Tags</h5>
+    <div id="eventTags" class="d-flex flex-wrap gap-2 justify-content-center"></div>
 </div>
-
-            <div class="all-matches snipcss-UkjXK">
-                <div class="ng-star-inserted">
-                    <div class="match active">
-                        <div class="top clearfix">
-                            <div class="teams">
-                                <div class="image-holder first">
-                                    <div class="flag-icon style-GZKDY" id="style-GZKDY">
-                                         
-                                    </div>
-                                </div>
-                                <div class="image-holder second">
-                                    <div class="flag-icon style-jQWQz" id="style-jQWQz">
-                                         
-                                    </div>
-                                </div>
-                                <div class="team-names">
-                                    <div class="team-name first">
-                                       
-                                    </div>
-                                    <div class="team-name-holder">
-                                        <div class="vs">
-                                            vs
-                                        </div>
-                                        <div class="team-name second">
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="blocks">
-                                <div class="one-block stadium">
-                                    <div class="image-holder">
-                                        <img alt="" src="https://tazkarti.com/assets/images/svg/stadium.svg">
-                                    </div>
-                                    <div class="info">
-                                        <h6></h6>
-                                    </div>
-                                </div>
-                                <div class="one-block when">
-                                    <div class="image-holder">
-                                        <img alt="" src="https://tazkarti.com/assets/images/calendar.svg">
-                                    </div>
-                                    <div class="info">
-                                        <div class="first">
-                                          
-                                        </div>
-                                        <div class="second">
-                                           
-                                        </div>
-                                    </div>
-                                </div>
-                               
-                             
-              </div>
+<hr>
+<img id="eventImage" 
+     src="" 
+     class="img-fluid rounded-3 mb-4 shadow-lg d-block mx-auto" 
+     style="max-height: 500px; object-fit: cover;">
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title fs-4">About Event</h3>
+                    <p id="eventDescription" class="card-text"></p>
+                    <div class="mt-3">
+                        <h4>Rules</h4>
+                        <ul class="list-unstyled">
+                            <li>- Entry permitted only with a valid ticket.</li>
+    <li>- Please carry a government-issued photo ID for verification.</li>
+    <li>- No outside food or beverages allowed inside the venue.</li>
+    <li>- Re-entry is not permitted after exit.</li>
+    <li>- Attendees must follow all safety and security protocols.</li>
+    <li>- The organizer reserves the right to refuse entry to anyone.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="bottom">
-              <div class="one">
-                <div class="first">
-                  Tournament
-                </div>
-                <div class="second style-oF12b" id="style-oF12b">
-                
-                </div>
-              </div>
-              <div class="one">
-                <div class="first">
-                  Match No.
-                </div>
-                <div class="second style-qTcj7" id="style-qTcj7">
-                
-                </div>
-              </div>
-              <div class="one">
-                <div class="first ng-star-inserted">
-                  Group : 
-                </div>
-                <div class="second style-tabpl" id="style-tabpl">
-               
-                </div>
-              </div>
-              <div class="one">
-                <div class="second style-h4N5j" id="style-h4N5j">
-                
-                </div>
-              </div>
-              
-            </div>
-          </div>
         </div>
-      </div> <hr>
-      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="staticBackdropLabel">Book Ticket</h4>
-                <div><button type="button" class="btn-close" onClick="window.location.reload();" aria-label="Close"></button></div>
-            </div>
-            <div class="modal-body text-center">
-            
-                    <input type="hidden" name="matchId" id="matchIdInput">
-                    <input type="hidden" name="ticketCategory" id="ticketCategoryInput">
-                    <input type="hidden" name="ticketPrice" id="ticketPriceInput">
-                <div class="teams-images modal-body text-center d-flex justify-content-center align-items-center">
-                    <div class="d-inline-block mx-4 image-holder">
-                    <img src="" class="rounded-circle img-fluid team-logo-1" alt="Team 1 Logo">
-                        <div class="team-name first team-name-1"></div>
-                    </div>
-                    <div class="d-inline-block mx-5 image-holder">
-                    <img src="" class="rounded-circle img-fluid team-logo-2" alt="Team 2 Logo">
-                        <div class="team-name first team-name-2"></div>
-                    </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title fs-4">Ticket Options</h3>
+                    <div id="ticketTypes" class="d-grid gap-2"></div>
+                    <button class="btn btn-dark btn-lg mt-3 w-100" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#bookingModal">
+                        Book Now
+                    </button>
                 </div>
-               
-            <div class="mt-3">
-                <div>Choose a seat</div>
-                <select id="cat-select" class="cat-select">
-                   
-                    </select>
-                    
-                </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button"  class="btn btn-secondary" onClick="window.location.reload();" >Close</button>
-              <button type="submit" class="button button-black width-auto book-ticket-btn" 
-    data-bs-toggle="modal" 
-    data-bs-target="#staticBackdrop"
-    id="bookButton"
-    
-    ">
-    Book Ticket
-</button>
-</form>
             </div>
         </div>
     </div>
 </div>
-   
-<div id="resultContainer"></div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">Confirm Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="selectedTicket" class="alert alert-info"></div>
+                <div id="bookingMessage" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmBooking">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { getEventById } from './api.js';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('id');
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjUxYzQzOWJlMzAyMThkNjgyN2NmNiIsImlhdCI6MTc0NzQwMDYyOSwiZXhwIjoxNzQ3NDE4NjI5fQ.-WOnl6y7FWTx5bUC1CIxyw9fpRM2VemLjpXvr4Q-UgI';
+
+    let selectedTicket = null;
+
+    if (!eventId) {
+        alert('Event ID not specified in URL');
+        return;
+    }
+
+    getEventById(eventId)
+        .then(data => {
+            const event = data.CertainEvent;
+            populateEventDetails(event);
+            createTicketOptions(event.EventPrices);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load event details');
+        });
+
+    function populateEventDetails(event) {
+        document.getElementById('eventName').textContent = event.EventName;
+        document.getElementById('eventDate').textContent = formatDate(event.EventDate);
+        document.getElementById('eventLocation').textContent = event.EventLocation;
+        document.getElementById('eventImage').src = event.EventImage;
+        document.getElementById('eventDescription').textContent = event.EventDescription;
+
+        // ✅ Render tags if available
+        const tagsContainer = document.getElementById('eventTags');
+        tagsContainer.innerHTML = '';
+        if (Array.isArray(event.EventCategory) && event.EventCategory.length > 0) {
+            event.EventCategory.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'badge bg-secondary';
+                span.textContent = tag;
+                tagsContainer.appendChild(span);
+            });
+        } else {
+            tagsContainer.innerHTML = '<span class="text-muted">No tags available</span>';
+        }
+    }
+
+    function createTicketOptions(prices) {
+        const ticketTypesDiv = document.getElementById('ticketTypes');
+        ticketTypesDiv.innerHTML = '';
+
+        prices.forEach(price => {
+            const div = document.createElement('div');
+            div.className = 'card mb-2';
+            div.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">${price.ticketType}</h5>
+                    <p class="card-text">$${price.price}</p>
+                    <button class="btn btn-outline-dark w-100 select-ticket"
+                            data-type="${price.ticketType}"
+                            data-price="${price.price}">
+                        Select
+                    </button>
+                </div>
+            `;
+            ticketTypesDiv.appendChild(div);
+        });
+
+        document.querySelectorAll('.select-ticket').forEach(button => {
+            button.addEventListener('click', () => {
+                selectedTicket = {
+                    type: button.dataset.type,
+                    price: button.dataset.price
+                };
+                document.getElementById('selectedTicket').innerHTML = `
+                    Selected: <strong>${selectedTicket.type}</strong><br>
+                    Price: <strong>$${selectedTicket.price}</strong>
+                `;
+            });
+        });
+    }
+
+    document.getElementById('confirmBooking').addEventListener('click', async () => {
+        if (!selectedTicket) {
+            showMessage('Please select a ticket type', 'danger');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/Booking/book/${eventId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ ticketType: selectedTicket.type })
+            });
+
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Booking failed');
+
+            showMessage('Booking successful! Check your tickets page.', 'success');
+            setTimeout(() => window.location.reload(), 2000);
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('bookingMessage');
+        messageDiv.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show">
+                ${text}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    }
+});
+</script>
+
+
+        
+      </div>
+    </div> <hr>
+    
 
 <div class="px-3 py-2 text-bg-dark border-bottom">
       <div class="container">
         <footer class="py-3 my-4">
           <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-            <li class="nav-item"><a href="Homepage.php" class="nav-link px-2 text-body-primary text-white">Home</a></li>
-            <li class="nav-item"><a href="contact us.html" class="nav-link px-2 text-body-primary text-white">Contact Us</a></li>
-            <li class="nav-item"><a href="FAQ.html" class="nav-link px-2 text-body-primary text-white">FAQs</a></li>
-            <li class="nav-item"><a href="about.html" class="nav-link px-2 text-body-primary text-white">About</a></li>
+            <li class="nav-item"><a href="HomePage.html" class="nav-link px-2 text-body-primary text-white">Home</a></li>
+            <li class="nav-item"><a href="" class="nav-link px-2 text-body-primary text-white">Contact Us</a></li>
+            <li class="nav-item"><a href="" class="nav-link px-2 text-body-primary text-white">FAQs</a></li>
+            <li class="nav-item"><a href="" class="nav-link px-2 text-body-primary text-white">About</a></li>
           </ul>
           <p class="text-center text-body-primary">© 2024 Reserva</p>
         </footer>
@@ -539,95 +348,10 @@ $profilePicUrl = !empty($row['profile_pic_url']) ? $row['profile_pic_url'] : 'de
     </div>
           
           
-            
-      <!-- <script>
-        var matchId;
-function bookTicket(button) {
-    var modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
-
-    // Get data attributes from the clicked button
-     matchId = button.getAttribute('data-match-id');
-    var team1Name = button.getAttribute('data-team1-name');
-    var team1Logo = button.getAttribute('data-team1-logo');
-    var team2Name = button.getAttribute('data-team2-name');
-    var team2Logo = button.getAttribute('data-team2-logo');
-    // Update modal content with the selected match data
-    document.querySelector('.team-name-1').innerText = team1Name;
-    document.querySelector('.team-name-2').innerText = team2Name;
-    document.querySelector('.team-logo-1').src = team1Logo;
-    document.querySelector('.team-logo-2').src = team2Logo;
-  
-
-    // Open the modal
-
-    modal.show();
-   
-  
-}
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+            crossorigin="anonymous"></script>
 
 
-    $(document).ready(function () {
-        // Event listener for the book button
-        $('#bookButton').on('click', function () {
-            // Get the selected option value
-            var selectedCategory = $('#cat-select').val();
-           
-            // Log the selected value to the console
-         
-            var values = selectedCategory.split('|');
-
-// Extract the price and category name
-var price = values[1];
-var categoryName = values[0];
-
-proceedToCheckout();
-       
-
-});
-    });
-
-    function proceedToCheckout() {
-    // Get the selected category from your modal
-    var selectedCategory = $('#cat-select').val();
-    var values = selectedCategory.split('|');
-    var price = values[1];
-    var categoryName = values[0];
-
-    // Create a form element
-    var form = document.createElement('form');
-    form.method = 'post'; // You can change this to 'get' if needed
-    form.action = 'checkout-page.php';
-
-    // Create hidden input fields for the data you want to pass
-    var matchIdInput = document.createElement('input');
-    matchIdInput.type = 'hidden';
-    matchIdInput.name = 'match_id';
-    matchIdInput.value = matchId; // Use the global variable here
-
-    var categoryNameInput = document.createElement('input');
-    categoryNameInput.type = 'hidden';
-    categoryNameInput.name = 'category_name';
-    categoryNameInput.value = categoryName;
-
-    var priceInput = document.createElement('input');
-    priceInput.type = 'hidden';
-    priceInput.name = 'price';
-    priceInput.value = price;
-
-    // Append the input fields to the form
-    form.appendChild(matchIdInput);
-    form.appendChild(categoryNameInput);
-    form.appendChild(priceInput);
-
-    // Append the form to the body and submit it
-    document.body.appendChild(form);
-    form.submit();
-}
-</script> -->
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
- <script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

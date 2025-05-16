@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Booking from "../models/Booking";
 import Event from "../models/Event";
-import User from "../models/User"; // <-- Import User model
+import User from "../models/User"; 
 import mongoose from "mongoose";
 
 export const bookEvent = async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ export const bookEvent = async (req: Request, res: Response) => {
       );
 
       if (userBookingIndex !== -1) {
-        // Update tickets quantity for that booking in user document
+        
         const tickets = user.bookings[userBookingIndex].tickets;
         const ticketIdx = tickets.findIndex((t) => t.ticketType === ticketType);
         if (ticketIdx !== -1) {
@@ -51,7 +51,7 @@ export const bookEvent = async (req: Request, res: Response) => {
         user.bookings.push({
           eventId: new mongoose.Types.ObjectId(eventId),
           tickets: [{ ticketType, quantity: 1 }],
-          totalPrice: 0, // update as needed
+          totalPrice: 0, 
         });
       }
 

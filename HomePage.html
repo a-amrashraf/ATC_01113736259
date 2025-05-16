@@ -180,26 +180,90 @@
      </div >
      
      
-     <div class="container d-flex align-items-center justify-content-center">
-    <div id="myCarousel" class="carousel slide mb-6 carousel-container" data-bs-ride="carousel" style="width: 700px; height: 400px;">
-        <div class="carousel-inner" style="width: 100%; height: 100%;">
-        
-      </div>
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" class="active" aria-current="true"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"></button>
-      </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
+   <div class="container d-flex align-items-center justify-content-center">
+  <div id="myCarousel" class="carousel slide mb-6 carousel-container" data-bs-ride="carousel" style="width: 700px; height: 400px;">
+    <div class="carousel-inner" style="width: 100%; height: 100%;"></div>
+
+    <div class="carousel-indicators"></div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
   </div>
+</div>
+
+<script type="module">
+  import { getEvents } from './api.js'; // assuming you have this API wrapper
+
+async function buildCarousel() {
+  try {
+    // Call your API to get events with pagination params (page=1, limit=10)
+    const response = await getEvents({ page: 1, limit: 10 });
+    
+    // Access the actual events array
+    const events = response.Events || [];
+
+    // Select the carousel inner container
+    const carouselInner = document.querySelector('.carousel-inner');
+    const indicatorsContainer = document.querySelector('.carousel-indicators');
+
+    if (!carouselInner || !indicatorsContainer) {
+      console.error('Carousel elements not found');
+      return;
+    }
+
+    // Clear previous carousel content
+    carouselInner.innerHTML = '';
+    indicatorsContainer.innerHTML = '';
+
+    if (events.length === 0) {
+      carouselInner.innerHTML = `<div class="carousel-item active">
+        <div class="d-flex align-items-center justify-content-center" style="height: 250px;">
+          <p>No events available</p>
+        </div>
+      </div>`;
+      return;
+    }
+
+    events.forEach((event, index) => {
+      const isActive = index === 0 ? 'active' : '';
+
+      // Create carousel item HTML
+      const itemHTML = `
+        <div class="carousel-item ${isActive}">
+          <img src="${event.EventImage}" class="d-block w-100" alt="${event.EventName}" style="height: 250px; object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+            <h5>${event.EventName}</h5>
+            <p>${new Date(event.EventDate).toLocaleDateString()} - ${event.EventTime}</p>
+            <p>${event.EventLocation}</p>
+          </div>
+        </div>`;
+
+      carouselInner.insertAdjacentHTML('beforeend', itemHTML);
+
+      // Create carousel indicator button
+      const indicatorHTML = `
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="${index}" class="${isActive}" aria-label="Slide ${index + 1}" ${isActive ? 'aria-current="true"' : ''}></button>
+      `;
+      indicatorsContainer.insertAdjacentHTML('beforeend', indicatorHTML);
+    });
+
+  } catch (error) {
+    console.error('Failed to load events for carousel:', error);
+  }
+}
+
+// Call buildCarousel on page load or when needed
+buildCarousel();
+
+</script>
+
 
  </div> 
 

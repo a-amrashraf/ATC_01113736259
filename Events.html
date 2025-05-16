@@ -95,13 +95,7 @@
           <ul
           class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 "
         >
-          <li class="nav-icon">
-            <a href="Event-Details.html" class="nav-link text-black">
-              <svg class="bi d-block mx-auto mb-1" width="30" height="30">
-                  
-                </svg>             Event-Details
-            </a>
-          </li>
+          
           <li class="nav-icon">
               <a href="Events.html" class="nav-link text-dark">
                 <svg class="bi d-block mx-auto mb-1" width="30" height="30">
@@ -170,63 +164,92 @@
 
 
 
-<style>
-  .image {
-    height: 300px; /* Set a fixed height */
-    width: 100%; /* Allow the width to adjust based on the height */
-    object-fit: cover; /* Maintain aspect ratio; cover the container */
-  }
-  .card-description {
-    min-height: 150px; /* Set a minimum height for the card */
-  }
-  
-</style>
-</style>
 
-<div class="album py-5 bg-body-tertiary">
+
+ <div class="album py-5 bg-body-tertiary">
     <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      <div
+        id="events-container"
+        class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"
+      >
         
-                <div class="col">
-                  <div class="card shadow-sm">
-                    
-                    <div class="card-body">
-                      <p class="card-description">
-                        
-                      </p>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <p class="card-text">
-                          
-                        </p>
-                        
-                          <p class="card-text">
-                            
-                          </p>
-                        </a>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                        <button class="button button-black width-auto book-event-btn"
-        onclick=>
-    Book Event
-</button>
-
-    
-                          <div></strong></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              
-
-
-       
-       
-       
       </div>
     </div>
   </div>
+ <script type="module">
+  import { getEvents } from './api.js';
+
+  
+  function buildEventCards(events) {
+    const container = document.getElementById('events-container');
+    container.innerHTML = ''; 
+
+    if (!events || events.length === 0) {
+      container.innerHTML = '<p>No events available.</p>';
+      return;
+    }
+
+    events.forEach(event => {
+      const col = document.createElement('div');
+      col.className = 'col';
+
+      col.innerHTML = `
+        <div class="card shadow-sm" style="cursor:pointer;">
+          <img
+            src="${event.EventImage || 'https://via.placeholder.com/150'}"
+            class="card-img-top"
+            alt="${event.EventName}"
+            style="height: 225px; object-fit: cover;"
+          />
+          <div class="card-body">
+            <h5 class="card-title">${event.EventName}</h5>
+            <p class="card-text">${event.EventDescription}</p>
+            <p><strong>Date:</strong> ${new Date(event.EventDate).toLocaleDateString()}</p>
+            <p><strong>Location:</strong> ${event.EventLocation}</p>
+            <p><strong>Time:</strong> ${event.EventTime}</p>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-primary view-event-btn">View Event Details</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      
+      const card = col.querySelector('.card');
+      card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('view-event-btn')) {
+          window.location.href = `Event-Details.html?id=${event._id}`;
+        }
+      });
+
+      
+      const viewBtn = col.querySelector('.view-event-btn');
+      viewBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        window.location.href = `Event-Details.html?id=${event._id}`;
+      });
+
+      container.appendChild(col);
+    });
+  }
+
+  async function loadEvents() {
+    try {
+      const response = await getEvents(1, 10);
+      buildEventCards(response.Events); 
+    } catch (error) {
+      console.error('Error loading events:', error);
+      const container = document.getElementById('events-container');
+      container.innerHTML = `<p>Error loading events: ${error.message}</p>`;
+    }
+  }
+
+  
+  document.addEventListener('DOMContentLoaded', loadEvents);
+</script>
+
+
   
 
   

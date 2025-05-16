@@ -8,12 +8,15 @@ import UserRoutes from './routes/User'
 import BookingRoutes from './routes/Booking'
 
 
+
 dotenv.config()
 
 const app:Application = express();
+const cors = require('cors');
 
 app.use(express.json());
 app.use(morgan("short"));
+app.use(cors());
 
 connectDB();
 
