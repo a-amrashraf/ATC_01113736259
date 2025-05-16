@@ -15,6 +15,20 @@
       -moz-user-select: none;
       user-select: none;
     }
+
+    .carousel-item .col-md-4 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  filter: invert(0); /* remove if you've inverted colors */
+  opacity: 1 !important;
+  z-index: 10 !important;
+  width: 5%; /* make buttons wider if very narrow */
+}
+
   
     @media (min-width: 768px) {
       .bd-placeholder-img-lg {

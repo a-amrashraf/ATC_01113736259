@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('eventImage').src = event.EventImage;
         document.getElementById('eventDescription').textContent = event.EventDescription;
 
-        // ✅ Render tags if available
+        
         const tagsContainer = document.getElementById('eventTags');
         tagsContainer.innerHTML = '';
         if (Array.isArray(event.EventCategory) && event.EventCategory.length > 0) {
