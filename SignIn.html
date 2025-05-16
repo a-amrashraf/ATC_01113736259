@@ -80,7 +80,7 @@
     <main class="form-signin m-auto" >
        
     
-        <form method="post" >
+        <form  >
     <div class="form-floating">
         <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
         <label for="floatingInput">Email address</label>
@@ -109,6 +109,37 @@
     <script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"></script>
     
 </main>
+
+<script type="module">
+  import { loginUser } from './api.js';
+
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = form.email.value;
+    const password = form.password.value;
+
+    try {
+      const response = await loginUser({ email, password });
+
+      // Save token if needed
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('username', response.user.username);
+
+      alert('Login successful');
+      
+      window.location.href = 'HomePage.html';
+
+    } catch (err) {
+      console.error(err);
+      alert('Login failed: ' + (err.message || 'Check credentials'));
+    }
+  });
+</script>
+
+
 
 <div class="px-3 py-2 text-bg-dark border-bottom">
       <div class="container">

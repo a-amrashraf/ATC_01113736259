@@ -66,9 +66,10 @@
     <div class="center">
       <div class="wrapper" style="display: block;">
         <h2>Registration</h2>
-        <form action="#" method="post">
+        <form id="register-form">
+
           <div class="input-box">
-            <input type="text" name= "name" placeholder="Enter your name" required>
+            <input type="text" name= "username" placeholder="Enter your username" required>
           </div>
           <div class="input-box">
             <input type="text" name= "email" placeholder="Enter your email" required>
@@ -95,6 +96,36 @@
       </div>
     </div>
     
+
+    <script type="module">
+  import { registerUser } from './api.js';
+
+  const form = document.getElementById('register-form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = form.username.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const confirm = form.confirm.value;
+
+    if (password !== confirm) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await registerUser({ username, email, password });
+      alert("Registration successful. Redirecting to login...");
+      window.location.href = "SignIn.html";
+    } catch (err) {
+      console.error(err);
+      alert("Registration failed: " + (err.message || "Try again later"));
+    }
+  });
+</script>
+
 
     <div class="px-3 py-2 text-bg-dark border-bottom">
       <div class="container">

@@ -1,5 +1,19 @@
 import { BASE_URL, fetchJson, postJson, putJson, deleteRequest } from '/https.js';
 
+
+
+
+export async function loginUser(credentials) {
+  return postJson(`${BASE_URL}/user/login`, credentials, false);
+}
+
+
+export async function registerUser(userData) {
+  return postJson(`${BASE_URL}/user/register`, userData, false);
+}
+
+
+
 // =========================
 // Events APIs
 // =========================
