@@ -124,7 +124,7 @@
     try {
       const response = await loginUser({ email, password });
 
-      // Save token if needed
+      
       localStorage.setItem('token', response.token);
       localStorage.setItem('username', response.user.username);
 

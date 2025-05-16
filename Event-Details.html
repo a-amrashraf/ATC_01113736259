@@ -207,7 +207,7 @@ import { getEventById } from './api.js';
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = urlParams.get('id');
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjUxYzQzOWJlMzAyMThkNjgyN2NmNiIsImlhdCI6MTc0NzQwMDYyOSwiZXhwIjoxNzQ3NDE4NjI5fQ.-WOnl6y7FWTx5bUC1CIxyw9fpRM2VemLjpXvr4Q-UgI';
+    const token = localStorage.getItem('token');
 
     let selectedTicket = null;
 

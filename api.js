@@ -2,10 +2,21 @@ import { BASE_URL, fetchJson, postJson, putJson, deleteRequest } from '/https.js
 
 
 
+export async function loginUser(email, password) {
+  const response = await fetch(`${BASE_URL}/user/login`, {  // <-- backticks here
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-export async function loginUser(credentials) {
-  return postJson(`${BASE_URL}/user/login`, credentials, false);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Login failed");
+  }
+
+  return response.json();
 }
+
 
 
 export async function registerUser(userData) {
