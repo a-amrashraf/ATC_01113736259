@@ -91,15 +91,32 @@ export const bookEvent = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserBookings = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+
+
+
+export const getUserBookings = async (req: Request, res: Response): Promise<void> => {
+  const username = req.header('X-Username');
+  
+  if (!username) {
+    res.status(400).json({ message: 'Username header missing' });
+    return;
+  }
 
   try {
-    const bookings = await Booking.find({ userId }).populate("eventId");
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
 
-    res.status(200).json({ bookings });
+    const bookings = await Booking.find({ userId: user._id }).populate({
+      path: 'eventId',
+      select: 'EventName EventDate EventTime,', 
+    });
+
+    res.status(200).json({ bookings });  // Just send the response
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching bookings" });
+    res.status(500).json({ message: 'Error fetching bookings' });
   }
 };

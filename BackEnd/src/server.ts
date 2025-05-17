@@ -16,7 +16,11 @@ const cors = require('cors');
 
 app.use(express.json());
 app.use(morgan("short"));
-app.use(cors());
+app.use(cors(
+    {
+        origin: '*'
+    }
+));
 
 connectDB();
 

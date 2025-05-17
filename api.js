@@ -43,16 +43,42 @@ export async function getEventById(id) {
 
 
 export async function createEvent(eventData) {
-  return postJson(`${BASE_URL}/events/createEvent`, eventData, true);
+  const response = await fetch(`${BASE_URL}/events/CreateEvent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventData),  
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to create event");
+  }
+
+  return response.json();
 }
+
 
 export async function editEvent(id, eventData) {
   return putJson(`${BASE_URL}/events/EditEvent/:${id}`, eventData, true);
 }
 
 export async function deleteEvent(id) {
-  return deleteRequest(`${BASE_URL}/events/DeleteEvent/:${id}`, true);
+  const response = await fetch(`${BASE_URL}/Events/DeleteEvent/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`, 
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Delete failed");
+  }
+
+  return response.json();
 }
+
 
 // =========================
 // Bookings APIs
@@ -67,11 +93,29 @@ export async function addBooking(bookingData) {
 }
 
 
-// to do
-export async function getUserBookingsById(userId) {
-  return fetchJson(`${BASE_URL}/user/users/${userId}/bookings`, true);
+
+export async function getUserBookedEvents() {
+  const username = localStorage.getItem("username");
+  if (!username) throw new Error("No username found");
+
+  try {
+    const response = await fetch(`${BASE_URL}/booking/myBookings`, {
+      headers: {
+        "X-Username": username
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch bookings");
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Fetch bookings error:", error);
+    throw error;
+  }
 }
 
-export async function deleteBooking(id) {
-  return deleteRequest(`${BASE_URL}/bookings/${id}`, true);
-}
+
+

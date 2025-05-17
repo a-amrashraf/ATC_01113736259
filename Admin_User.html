@@ -87,7 +87,7 @@
               >
               
                 <li class="nav-icon">
-                    <a href="admin-events.php" class="nav-link text-dark">
+                    <a href="HomePage.html" class="nav-link text-dark">
                       <svg class="bi d-block mx-auto mb-1" width="30" height="30">
                         <use xlink:href="#event" />
                       </svg>
@@ -149,31 +149,51 @@
     
   
 <div class="container">
-<form method="post" action="">
 <div>
   <div class="d-flex justify-content-end">
-<button class="button button-black width-auto  book-ticket-btn" style="margin : 1px; margin-top: 1%;"  id="addNewmatchButton" type="submit"  name="add">Add new event</button></div>
+<button class="button button-black width-auto  book-ticket-btn" style="margin : 1px; margin-top: 1%;"  id="addNewmatchButton" type="submit"  name="add">Add new event</button>
+</div>
+  <div id="addEventFormContainer" style="display:none; padding:10px; border:1px solid #ccc; margin-top:10px;">
+  <form id="addEventForm">
+    <input type="text" name="EventName" placeholder="Event Name" required /><br/><br/>
+    <input type="date" name="EventDate" required /><br/><br/>
+    <input type="text" name="EventLocation" placeholder="Event Location" required /><br/><br/>
+    <input type="time" name="EventTime" required /><br/><br/>
+    <input type="text" name="EventDescription" placeholder="Event Description" required /><br/><br/>
+    <input type="text" name="EventImage" placeholder="Event Image URL" required /><br/><br/>
+    <input type="text" name="EventCategory" placeholder="Event Category (comma separated)" required /><br/><br/>
+    
+    <div id="pricesContainer"></div>
+    <button type="button" id="addPriceRowBtn">Add Ticket Price</button><br/><br/>
+    
+    <button type="submit">Submit</button>
+    <button type="button" id="cancelAddEventBtn">Cancel</button>
+  </form>
+</div>
+
+
+
         <h5 style="font-weight : bold; margin: 1%;" for="myDropdown">Select events </h5>
         <div>
         <select id="myDropdown" name="myDropdown" class="form-control" onchange="this.form.submit()">
         <option value="">Select an event</option>
         
         </select>
-    </form>
+  
 
       
-   
-      <form method="post" action="">
+        </div>
+      <form method="" action="">
       <div class="container-fluid">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="d-flex justify-content-end">
+      <div id = "eventActions" class="d-flex justify-content-end">
       <input type="hidden" name="event_id" value='.$selectedOption.'>
       
-      <button class="button button-black width-auto  book-ticket-btn" style="margin : 1px;"  type="submit" name="delete">Delete</button>
-        <button class="button button-black width-auto book-ticket-btn editAllButton" style="margin : 1px;"  type="button" name="edit">Edit</button>
-        <button class="button button-black width-auto book-ticket-btn" style="margin : 1px;"  type="submit" name="save" >Confirm Edit </button>
+      <button id = "deleteBtn" class="button button-black width-auto  deleteBtn" style="margin : 1px;"  type="submit" name="deleteBtn">Delete</button>
+        <button id = "editBtn" class="button button-black width-auto book-ticket-btn editAllButton" style="margin : 1px;"  type="button" name="edit">Edit</button>
+        <button id="confirmEditBtn" class="button button-black width-auto book-ticket-btn" style="margin : 1px;"  type="submit" name="save" >Confirm Edit </button>
       </div>
       </div>
       </form>
@@ -182,6 +202,175 @@
 </div>
 
       
+
+
+<script type="module">
+  import { getEvents, getEventById, deleteEvent, editEvent, createEvent } from './api.js';
+
+  // Grab DOM elements
+  const dropdown = document.getElementById('myDropdown');
+  const eventActions = document.getElementById('eventActions');
+  const deleteBtn      = document.getElementById('deleteBtn');
+  const editBtn        = document.getElementById('editBtn');
+  const confirmEditBtn = document.getElementById('confirmEditBtn');
+  const addBtn         = document.getElementById('addNewmatchButton');
+  const formContainer  = document.getElementById('addEventFormContainer');
+  const cancelBtn      = document.getElementById('cancelAddEventBtn');
+  const priceRowBtn    = document.getElementById('addPriceRowBtn');
+  const addForm        = document.getElementById('addEventForm');
+  const pricesContainer= document.getElementById('pricesContainer');
+
+  let allEvents = [];
+  let selectedEventId = null;
+  let editedEventData = null;
+
+  // —————————————————————
+  // 1) Load & cache all events
+  // —————————————————————
+  async function loadEvents() {
+    try {
+      const resp = await getEvents({ page:1, limit:100 });
+      // your API returns: { total, currentPage, totalPages, Events: [...] }
+      allEvents = resp.Events || [];
+      dropdown.innerHTML = '<option value="">Select an event</option>';
+      allEvents.forEach(ev => {
+        const o = document.createElement('option');
+        o.value = ev._id;
+        o.textContent = ev.EventName;
+        dropdown.appendChild(o);
+      });
+    } catch (err) {
+      console.error('Failed to load events:', err);
+      alert('Could not load events.');
+    }
+  }
+  await loadEvents();
+
+  // —————————————————————
+  // 2) When user picks one
+  // —————————————————————
+  dropdown.addEventListener('change', async () => {
+    selectedEventId = dropdown.value;
+    if (!selectedEventId) {
+      eventActions.style.display = 'none';
+      return;
+    }
+    // show buttons
+    eventActions.style.display = 'block';
+
+    // find the full object in cache
+    editedEventData = allEvents.find(ev => ev._id === selectedEventId);
+    console.log('Selected event data:', editedEventData);
+  });
+
+  // —————————————————————
+  // 3) Delete
+  // —————————————————————
+  deleteBtn.addEventListener('click', async () => {
+    if (!selectedEventId) return alert('Select an event first.');
+    if (!confirm('Delete this event?')) return;
+    try {
+      await deleteEvent(selectedEventId);
+      alert('Deleted!');
+      // remove from cache & UI
+      allEvents = allEvents.filter(ev => ev._id !== selectedEventId);
+      dropdown.querySelector(`option[value="${selectedEventId}"]`).remove();
+      dropdown.value = '';
+      eventActions.style.display = 'none';
+    } catch (err) {
+      console.error(err);
+      alert('Delete failed: ' + err.message);
+    }
+  });
+
+  // —————————————————————
+  // 4) Edit (prep)
+  // —————————————————————
+  editBtn.addEventListener('click', () => {
+    if (!editedEventData) return alert('No event selected.');
+    // You'd prefill your edit form here.
+    // For now:
+    alert(`Ready to edit: ${editedEventData.EventName}`);
+  });
+
+  // —————————————————————
+  // 5) Confirm Edit
+  // —————————————————————
+  confirmEditBtn.addEventListener('click', async () => {
+    if (!editedEventData) return alert('No data to update.');
+    try {
+      await editEvent(selectedEventId, editedEventData);
+      alert('Updated!');
+      await loadEvents();
+    } catch (err) {
+      console.error(err);
+      alert('Update failed: ' + err.message);
+    }
+  });
+
+  // —————————————————————
+  // 6) Show Add‑Event form
+  // —————————————————————
+  addBtn.addEventListener('click', e => {
+    e.preventDefault();
+    formContainer.style.display = 'block';
+  });
+  cancelBtn.addEventListener('click', () => {
+    formContainer.style.display = 'none';
+    addForm.reset();
+    pricesContainer.innerHTML = '';
+  });
+
+  // —————————————————————
+  // 7) Dynamic ticket‑price rows
+  // —————————————————————
+  priceRowBtn.addEventListener('click', () => {
+    const row = document.createElement('div');
+    row.className = 'price-row';
+    row.innerHTML = `
+      <input name="ticketType" placeholder="Ticket Type" required>
+      <input name="price" type="number" placeholder="Price" required>
+      <button type="button" class="removePriceBtn">Remove</button>
+    `;
+    pricesContainer.appendChild(row);
+    row.querySelector('.removePriceBtn').onclick = () => row.remove();
+  });
+
+  // —————————————————————
+  // 8) Submit new event
+  // —————————————————————
+  addForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = e.target;
+    const payload = {
+      EventName:        f.EventName.value.trim(),
+      EventDate:        f.EventDate.value,
+      EventLocation:    f.EventLocation.value.trim(),
+      EventTime:        f.EventTime.value,
+      EventDescription: f.EventDescription.value.trim(),
+      EventImage:       f.EventImage.value.trim(),
+      EventCategory:    f.EventCategory.value.split(',').map(s=>s.trim()).filter(Boolean),
+      EventPrices: Array.from(pricesContainer.querySelectorAll('.price-row')).map(r=>({
+        ticketType: r.querySelector('[name="ticketType"]').value.trim(),
+        price:      Number(r.querySelector('[name="price"]').value)
+      }))
+    };
+
+    try {
+      await createEvent(payload);
+      alert('Event added!');
+      addForm.reset();
+      pricesContainer.innerHTML = '';
+      formContainer.style.display = 'none';
+      await loadEvents();
+    } catch (err) {
+      console.error(err);
+      alert('Add failed: ' + err.message);
+    }
+  });
+</script>
+
+
 </body>
 
 

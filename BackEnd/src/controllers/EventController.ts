@@ -118,7 +118,7 @@ export const DeleteEvent = async (
       .json({ message: "Event deleted successfully", DeletedEvent });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error creating event" });
+    res.status(500).json({ message: "Error deleting event" });
   }
 };
 
